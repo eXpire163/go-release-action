@@ -5,29 +5,13 @@
 Automatically publish `Go` binaries to Github Release Assets through Github Action.    
 
 ## Features    
-- Build `Go` binaries for release and publish to Github Release Assets.     
-- Customizable `Go` versions. `golang 1.16` by default.    
-- Support different `Go` project path in repository.     
-- Support multiple binaries in same repository.    
-- Customizable binary name.     
-- Support multiple `GOOS`/`GOARCH` build in parallel by [Github Action Matrix Strategy](https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idstrategymatrix) gracefully.         
-- Publish `.zip` instead of `.tar.gz` for `windows`.     
-- No `musl` library dependency issue on `linux`.     
-- Support extra command that will be executed before `go build`. You may want to use it to solve dependency if you're NOT using [Go Modules](https://github.com/golang/go/wiki/Modules).       
-- Rich parameters support for `go build`(e.g. `-ldflags`, etc.).     
-- Support package extra files into artifacts (e.g., `LICENSE`, `README.md`, etc).    
-- Support customize build command, e.g., use [packr2](https://github.com/gobuffalo/packr/tree/master/v2)(`packr2 build`) instead of `go build`. Another important usage is to use `make`(`Makefile`) for building on Unix-like systems.          
-- Support optional `.md5` along with artifacts. 
-- Support optional `.sha256` along with artifacts.     
-- Customizable release tag to support publish binaries per `push` or `workflow_dispatch`(manually trigger).      
-- Support overwrite assets if it's already exist.    
-- Support customizable asset names.      
-- Support private repositories.     
-- Support executable compression by [upx](https://github.com/upx/upx).       
+
+- support `signify-openbsd`
+
+- check the original repo for more
+
 
 ## Usage
-
-### Basic Example
 
 ```yaml
 # .github/workflows/release.yaml
@@ -37,16 +21,30 @@ on:
     types: [created]
 
 jobs:
-  release-linux-amd64:
-    name: release linux/amd64
+  releases-matrix:
+    name: Release Go Binary
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # build and publish in parallel: linux/386, linux/amd64, windows/386, windows/amd64, darwin/amd64 
+        goos: [linux, windows, darwin]
+        goarch: ["386", amd64]
+        exclude:  
+          - goarch: "386"
+            goos: darwin 
     steps:
     - uses: actions/checkout@v2
-    - uses: wangyoucao577/go-release-action@v1.19
+    - uses: chux0519/go-release-action@v2.1.0
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        goos: linux
-        goarch: amd64
+        # only needs to set following 2 secrets
+        signify_sec_key: ${{ secrets.SIGNIFY_SEC_KEY }}
+        signify_sec_key_pass: ${{ secrets.SIGNIFY_SEC_KEY_PASS }}
+        md5sum: FALSE
+        signify: TRUE
+        goos: ${{ matrix.goos }}
+        goarch: ${{ matrix.goarch }}
+        extra_files: README.md
 ```
 
 ### Parameters
@@ -73,49 +71,3 @@ jobs:
 | release_tag | **Optional** | Target release tag to publish your binaries to. It's dedicated to publish binaries on every `push` into one specified release page since there's no target in this case. DON'T set it if you trigger the action by `release: [created]` event as most people do.|
 | overwrite | **Optional** | Overwrite asset if it's already exist. `FALSE` by default. |
 | asset_name | **Optional** | Customize asset name if do not want to use the default format `${BINARY_NAME}-${RELEASE_TAG}-${GOOS}-${GOARCH}`. <br>Make sure set it correctly, especially for matrix usage that you have to append `-${{ matrix.goos }}-${{ matrix.goarch }}`. A valid example could be  `asset_name: binary-name-${{ matrix.goos }}-${{ matrix.goarch }}`. |
-
-### Advanced Example
-
-- Release for multiple OS/ARCH in parallel by matrix strategy.    
-- `Go` code is not in `.` of your repository.    
-- Customize binary name.    
-- Use `go 1.13.1` from downloadable URL instead of default `1.16`.
-- Package extra `LICENSE` and `README.md` into artifacts.    
-
-```yaml
-# .github/workflows/release.yaml
-
-on: 
-  release:
-    types: [created]
-
-jobs:
-  releases-matrix:
-    name: Release Go Binary
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        # build and publish in parallel: linux/386, linux/amd64, windows/386, windows/amd64, darwin/amd64 
-        goos: [linux, windows, darwin]
-        goarch: ["386", amd64]
-        exclude:  
-          - goarch: "386"
-            goos: darwin 
-    steps:
-    - uses: actions/checkout@v2
-    - uses: wangyoucao577/go-release-action@v1.19
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        goos: ${{ matrix.goos }}
-        goarch: ${{ matrix.goarch }}
-        goversion: "https://dl.google.com/go/go1.13.1.linux-amd64.tar.gz"
-        project_path: "./cmd/test-binary"
-        binary_name: "test-binary"
-        extra_files: LICENSE README.md
-```
-
-### More Examples 
-Welcome share your usage for other people's reference!    
-- [wiki/More-Examples](https://github.com/wangyoucao577/go-release-action/wiki/More-Examples)
-
-[:clap:](":clap:")[:clap:](":clap:")[:clap:](":clap:") Enjoy! Welcome [star](https://github.com/wangyoucao577/go-release-action/) if like it[:smile:](:smile:)     
