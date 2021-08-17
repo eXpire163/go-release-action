@@ -59,6 +59,10 @@ inputs:
     description: 'Publish `.sig` along with artifacts.'
     required: false
     default: 'TRUE'
+  signify_sec_key:
+    description: 'Private key used by signify, pass this by secrets'
+    required: false
+    default: ''
   sha256sum:
     description: 'Publish `.sha256` along with artifacts.'
     required: false
@@ -94,6 +98,7 @@ runs:
     - ${{ inputs.extra_files }}
     - ${{ inputs.md5sum }}
     - ${{ inputs.signify }}
+    - ${{ inputs.signify_sec_key }}
     - ${{ inputs.sha256sum }}
     - ${{ inputs.release_tag }}
     - ${{ inputs.overwrite }}
