@@ -65,6 +65,7 @@ jobs:
 | extra_files | **Optional** | Extra files that will be packaged into artifacts either. Multiple files separated by space. Note that extra folders can be allowed either since internal `cp -r` already in use. <br>E.g., `extra_files: LICENSE README.md` |
 | md5sum | **Optional** | Publish `.md5` along with artifacts, `TRUE` by default. |
 | sha256sum | **Optional** | Publish `.sha256` along with artifacts, `FALSE` by default. |
+| signify | **Optional** | Publish `.sig` along with artifacts, `FALSE` by default. |
 | release_tag | **Optional** | Target release tag to publish your binaries to. It's dedicated to publish binaries on every `push` into one specified release page since there's no target in this case. DON'T set it if you trigger the action by `release: [created]` event as most people do.|
 | overwrite | **Optional** | Overwrite asset if it's already exist. `FALSE` by default. |
 | asset_name | **Optional** | Customize asset name if do not want to use the default format `${BINARY_NAME}-${RELEASE_TAG}-${GOOS}-${GOARCH}`. <br>Make sure set it correctly, especially for matrix usage that you have to append `-${{ matrix.goos }}-${{ matrix.goarch }}`. A valid example could be  `asset_name: binary-name-${{ matrix.goos }}-${{ matrix.goarch }}`. |

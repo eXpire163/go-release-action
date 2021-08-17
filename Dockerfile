@@ -9,6 +9,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && DEBIAN_FRONTEND=noninteract
   zip \
   jq \
   ca-certificates \
+  signify-openbsd \
   && rm -rf /var/lib/apt/lists/*
 
 # install latest upx 3.96 by wget instead of `apt install upx-ucl`(only 3.95) 
