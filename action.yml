@@ -1,6 +1,6 @@
 # action.yml
 name: 'Go Release Binaries'
-author: 'Jay Zhang <wangyoucao577@gmail.com>'
+author: 'Yongsheng Xu <chuxdesign@hotmail.com>'
 description: 'Build and Release Go Binaries to GitHub Release Assets'
 inputs:
   github_token:
@@ -54,6 +54,10 @@ inputs:
   md5sum:
     description: 'Publish `.md5` along with artifacts.'
     required: false
+    default: 'FALSE'
+  signify:
+    description: 'Publish `.sig` along with artifacts.'
+    required: false
     default: 'TRUE'
   sha256sum:
     description: 'Publish `.sha256` along with artifacts.'
@@ -89,6 +93,7 @@ runs:
     - ${{ inputs.executable_compression }}
     - ${{ inputs.extra_files }}
     - ${{ inputs.md5sum }}
+    - ${{ inputs.signify }}
     - ${{ inputs.sha256sum }}
     - ${{ inputs.release_tag }}
     - ${{ inputs.overwrite }}
