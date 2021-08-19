@@ -39,6 +39,7 @@ if [ ${INPUT_GOOS} == 'windows' ]; then
 fi
 
 # prefix for ldflags 
+LDFLAGS_PREFIX=''
 if [ ! -z "${INPUT_LDFLAGS}" ]; then
     LDFLAGS_PREFIX="-ldflags"
 fi
