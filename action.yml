@@ -32,7 +32,7 @@ inputs:
     required: false
     default: '.'
   source_files:
-    description: 'Source files to build.',
+    description: 'Source files to be build'
     required: false
     default: ''
   binary_name:  
