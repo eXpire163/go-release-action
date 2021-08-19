@@ -9,7 +9,6 @@ RELEASE_TAG=$(basename ${GITHUB_REF})
 if [ ! -z "${INPUT_RELEASE_TAG}" ]; then
     RELEASE_TAG=${INPUT_RELEASE_TAG}
 fi
-GIT_COMMIT=$(git rev-parse --short ${GITHUB_SHA})
 RELEASE_ASSET_NAME=${BINARY_NAME}-${RELEASE_TAG}-${INPUT_GOOS}-${INPUT_GOARCH}
 if [ ! -z "${INPUT_ASSET_NAME}" ]; then
     RELEASE_ASSET_NAME=${INPUT_ASSET_NAME}
@@ -50,9 +49,6 @@ if [[ "${INPUT_BUILD_COMMAND}" =~ ^make.* ]]; then
         cp ${BINARY_NAME}${EXT} ${BUILD_ARTIFACTS_FOLDER}/
     fi
 else
-    export RELEASE_TAG=${RELEASE_TAG}
-    export GIT_COMMIT=${GIT_COMMIT}
-    
     if [ ! -z "${INPUT_LDFLAGS}" ]; then
       GOOS=${INPUT_GOOS} GOARCH=${INPUT_GOARCH} ${INPUT_BUILD_COMMAND} -o ${BUILD_ARTIFACTS_FOLDER}/${BINARY_NAME}${EXT} ${INPUT_BUILD_FLAGS} -ldflags "${INPUT_LDFLAGS}" ${INPUT_SOURCE_FILES}
     else
