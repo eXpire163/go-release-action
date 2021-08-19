@@ -31,6 +31,10 @@ inputs:
     description: 'Where to run `go build .`'
     required: false
     default: '.'
+  source_files:
+    description: 'Source files to build.',
+    required: false
+    default: ''
   binary_name:  
     description: 'Specify another binary name if do not want to use repository basename'
     required: false
@@ -95,6 +99,7 @@ runs:
     - ${{ inputs.build_flags}}
     - ${{ inputs.ldflags }}
     - ${{ inputs.project_path }}
+    - ${{ inputs.source_files }}
     - ${{ inputs.binary_name }}
     - ${{ inputs.pre_command }}
     - ${{ inputs.build_command }}
