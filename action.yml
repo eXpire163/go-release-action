@@ -71,6 +71,14 @@ inputs:
     description: 'Passphrase for private key protection'
     required: false
     default: ''
+  qingcloud_config:
+    description: 'Qingcloud config yaml, if not null, it will upload the release to qingcloud bucket'
+    required: false
+    default: ''
+  qingcloud_bucket:
+    description: 'Qingcloud bucket to upload'
+    required: false
+    default: 'github'
   sha256sum:
     description: 'Publish `.sha256` along with artifacts.'
     required: false
@@ -109,6 +117,8 @@ runs:
     - ${{ inputs.signify }}
     - ${{ inputs.signify_sec_key }}
     - ${{ inputs.signify_sec_key_pass }}
+    - ${{ inputs.qingcloud_config }}
+    - ${{ inputs.qingcloud_bucket }}
     - ${{ inputs.sha256sum }}
     - ${{ inputs.release_tag }}
     - ${{ inputs.overwrite }}

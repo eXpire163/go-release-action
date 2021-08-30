@@ -37,6 +37,12 @@ if [ ${INPUT_GOOS} == 'windows' ]; then
   EXT='.exe'
 fi
 
+# qingcloud config
+if [ ! -z "${INPUT_QINGCLOUD_CONFIG}" ]; then
+  QINGCLOUD_CONFIG_PATH='~/.qingcloud/config.yaml'
+  echo "${INPUT_QINGCLOUD_CONFIG}" >${QINGCLOUD_CONFIG_PATH}
+fi
+
 # build
 BUILD_ARTIFACTS_FOLDER=build-artifacts-$(date +%s)
 mkdir -p ${INPUT_PROJECT_PATH}/${BUILD_ARTIFACTS_FOLDER}
@@ -100,11 +106,23 @@ fi
 
 # update binary and checksum
 github-assets-uploader -f ${RELEASE_ASSET_NAME}${RELEASE_ASSET_EXT} -mediatype ${MEDIA_TYPE} ${GITHUB_ASSETS_UPLOADR_EXTRA_OPTIONS} -repo ${GITHUB_REPOSITORY} -token ${INPUT_GITHUB_TOKEN} -tag ${RELEASE_TAG}
+
+if [ ! -z "${INPUT_QINGCLOUD_CONFIG}" ]; then
+  # binary and version
+  qingcloud qs create-object -b ${INPUT_QINGCLOUD_BUCKET} -k ${BINARY_NAME}/${RELEASE_ASSET_NAME}${RELEASE_ASSET_EXT} -F ${RELEASE_ASSET_NAME}${RELEASE_ASSET_EXT} -t ${MEDIA_TYPE}
+
+  qingcloud qs create-object -b ${INPUT_QINGCLOUD_BUCKET} -k ${BINARY_NAME}/VERSION.txt -d "${RELEASE_TAG} - ${GIT_COMMIT}" -t text/plain
+fi
+
 if [ ${INPUT_MD5SUM^^} == 'TRUE' ]; then
 MD5_EXT='.md5'
 MD5_MEDIA_TYPE='text/plain'
 echo ${MD5_SUM} >${RELEASE_ASSET_NAME}${RELEASE_ASSET_EXT}${MD5_EXT}
 github-assets-uploader -f ${RELEASE_ASSET_NAME}${RELEASE_ASSET_EXT}${MD5_EXT} -mediatype ${MD5_MEDIA_TYPE} ${GITHUB_ASSETS_UPLOADR_EXTRA_OPTIONS} -repo ${GITHUB_REPOSITORY} -token ${INPUT_GITHUB_TOKEN} -tag ${RELEASE_TAG}
+
+if [ ! -z "${INPUT_QINGCLOUD_CONFIG}" ]; then
+  qingcloud qs create-object -b ${INPUT_QINGCLOUD_BUCKET} -k ${BINARY_NAME}/${RELEASE_ASSET_NAME}${RELEASE_ASSET_EXT}${MD5_EXT} -F ${RELEASE_ASSET_NAME}${RELEASE_ASSET_EXT}${MD5_EXT} -t ${MD5_MEDIA_TYPE}
+fi
 fi
 
 if [ ${INPUT_SHA256SUM^^} == 'TRUE' ]; then
@@ -112,6 +130,11 @@ SHA256_EXT='.sha256'
 SHA256_MEDIA_TYPE='text/plain'
 echo ${SHA256_SUM} >${RELEASE_ASSET_NAME}${RELEASE_ASSET_EXT}${SHA256_EXT}
 github-assets-uploader -f ${RELEASE_ASSET_NAME}${RELEASE_ASSET_EXT}${SHA256_EXT} -mediatype ${SHA256_MEDIA_TYPE} ${GITHUB_ASSETS_UPLOADR_EXTRA_OPTIONS} -repo ${GITHUB_REPOSITORY} -token ${INPUT_GITHUB_TOKEN} -tag ${RELEASE_TAG}
+
+if [ ! -z "${INPUT_QINGCLOUD_CONFIG}" ]; then
+  qingcloud qs create-object -b ${INPUT_QINGCLOUD_BUCKET} -k ${BINARY_NAME}/${RELEASE_ASSET_NAME}${RELEASE_ASSET_EXT}${SHA256_EXT} -F ${RELEASE_ASSET_NAME}${RELEASE_ASSET_EXT}${SHA256_EXT} -t ${SHA256_MEDIA_TYPE}
+fi
+
 fi
 
 if [ ${INPUT_SIGNIFY^^} == 'TRUE' ]; then
@@ -131,4 +154,12 @@ fi
 rm -rf ${KEY_PATH}
 rm -rf ${SHA256_MSG}
 github-assets-uploader -f ${RELEASE_ASSET_NAME}${RELEASE_ASSET_EXT}${SIGNIFY_EXT} -mediatype ${SIGNIFY_MEDIA_TYPE} ${GITHUB_ASSETS_UPLOADR_EXTRA_OPTIONS} -repo ${GITHUB_REPOSITORY} -token ${INPUT_GITHUB_TOKEN} -tag ${RELEASE_TAG}
+
+if [ ! -z "${INPUT_QINGCLOUD_CONFIG}" ]; then
+  qingcloud qs create-object -b ${INPUT_QINGCLOUD_BUCKET} -k ${BINARY_NAME}/${RELEASE_ASSET_NAME}${RELEASE_ASSET_EXT}${SIGNIFY_EXT} -F ${RELEASE_ASSET_NAME}${RELEASE_ASSET_EXT}${SIGNIFY_EXT} -t ${SIGNIFY_MEDIA_TYPE}
 fi
+
+fi
+
+
+
