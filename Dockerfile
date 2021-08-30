@@ -29,7 +29,6 @@ RUN wget --no-check-certificate --progress=dot:mega https://github.com/wangyouca
   github-assets-uploader -version
 
 RUN pip3 install qingcloud-cli && \ 
-  mkdir -p ~/.qingcloud && \
   qingcloud -v
 
 COPY *.sh /
